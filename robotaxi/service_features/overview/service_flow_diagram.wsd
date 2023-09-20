@@ -1,0 +1,44 @@
+@startuml
+
+left to right direction
+skinparam actorStyle awesome
+
+package "Passenger Transport Company" {
+    actor Operator
+    actor "Local Operator" as LocalOperator
+    actor "In-Vehicle Operator" as InVehicleOperator
+    actor Cartographer
+    actor "Remote Operator" as RemoteOperator
+}
+
+package "System Provider"{
+    actor "System Developer" as SystemDeveloper
+}
+
+package User{
+    actor Passenger
+}
+
+package "Autonomous Driving System"{
+
+    usecase "Develop System" as DevelopSystem
+
+    package Service{
+        usecase "Use"
+        usecase "Operate in the Vehicle" as OperateInVehicle
+        usecase "Operate on Site" as OperateOnSite
+        usecase "Operate Remotely" as OperateRemotely
+        usecase "Create Map" as CreateMap
+    }
+}
+
+Operator <|-- LocalOperator
+LocalOperator <|--InVehicleOperator
+Operator <|--RemoteOperator
+
+Passenger -up-> Use
+SystemDeveloper -up-> DevelopSystem
+LocalOperator --> OperateOnSite
+InVehicleOperator --> OperateInVehicle
+RemoteOperator --> OperateRemotely
+@enduml
