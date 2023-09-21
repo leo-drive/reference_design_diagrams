@@ -1,0 +1,17 @@
+@startuml
+hide empty description
+
+state "Autonomous Driving System" as AutonomousDrivingSystem
+state AutonomousDrivingSystem {
+    state "MIAV Startup" as MIAVStartup
+    state "MIAV Shutdown" as MIAVShutdown
+}
+
+
+[*] -right-> MIAVStartup : Turn on the vehicle
+MIAVStartup --> MIAVShutdown: Turn off the engine
+MIAVShutdown --> [*]
+
+@enduml
+
+
