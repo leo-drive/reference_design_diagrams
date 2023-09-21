@@ -41,4 +41,5 @@ SystemDeveloper -up-> DevelopSystem
 LocalOperator --> OperateOnSite
 InVehicleOperator --> OperateInVehicle
 RemoteOperator --> OperateRemotely
+Cartographer --> CreateMap
 @enduml
