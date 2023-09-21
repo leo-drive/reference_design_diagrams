@@ -1,0 +1,44 @@
+@startuml
+
+skinparam rectangle {
+    BorderColor #4B77BE
+    BorderThickness 2
+    FontName Arial
+    BackgroundColor #E8E8E8
+    RoundCorner 25
+    Shadowing true
+}
+
+rectangle System{
+    rectangle "Web.Auto" #D8EAD9 {
+        rectangle FMS #AED6F1
+        rectangle "Vehicle Data Search" #AED6F1
+        rectangle "bagpicker" #AED6F1
+        rectangle "Remote Calling Service" #AED6F1        
+        rectangle "Remote Monitoring Service" #AED6F1
+    }
+    rectangle MIAV #F5E0A1 {
+        rectangle Vehicle #F5CBA7
+        rectangle "Web.Auto Agent" #F5CBA7
+        
+        rectangle Autoware #D5F5E3 {
+            rectangle "Computing Platform" #A2D9CE
+            rectangle "AD API" #A2D9CE
+            rectangle "Localization Component" #A2D9CE
+            rectangle "Sensing Component" #A2D9CE
+            rectangle "Perception Component" #A2D9CE
+            rectangle "Planning Component" #A2D9CE
+            rectangle "Control Component" #A2D9CE
+            rectangle "System Component" #A2D9CE
+            rectangle "Vehicle Interface" #A2D9CE
+        }
+        rectangle HMI #D6EAF8 {
+            rectangle DCT #A9CCE3
+        }
+        rectangle Logging #F7DC6F {
+            rectangle "Autoware Bag Recorder" #F0E68C
+        }
+    }
+}
+
+@enduml
