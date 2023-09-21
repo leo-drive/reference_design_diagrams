@@ -29,6 +29,7 @@ state "Autonomous Driving Operation" as AutonomousDrivingOperation {
     DrivingPause --> c : Continue driving
     c --> TemporaryManualDriving : Override
     TemporaryManualDriving --> c : Switch drive mode\n to autonomous
+    c --> [*]
 }
 }
 
