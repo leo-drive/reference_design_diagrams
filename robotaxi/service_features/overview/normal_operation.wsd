@@ -1,0 +1,35 @@
+@startuml
+hide empty description
+skinparam backgroundColor #FFFFFF
+skinparam state {
+  FontSize 12
+  FontColor #333333
+  BorderColor #444444
+}
+
+/' Define states '/
+state "Normal Operation" as NormalOperation #YellowGreen {
+    state "Operation Preparation" as OperationPreparation #D7E4EF
+    state "Manual Driving" as ManualDriving #D7E4EF
+    state "Autonomous Driving Operation" as AutonomousDrivingOperation #F3FDE8
+    state "MIAV Error Diagnosis" as MIAVErrorDiagnosis #FAD7A0
+    state "Emergency Stop" as EmergencyStop #F1948A
+    state "Emergency State" as EmergencyState #E74C3C
+}
+
+/' Start the flow with operation preparation '/
+[*] -right-> OperationPreparation : Begin
+/' Enable autonomous driving '/
+OperationPreparation -down-> AutonomousDrivingOperation : Switch drive mode\n to autonomous
+AutonomousDrivingOperation -left-> OperationPreparation : Set pickup\n location
+AutonomousDrivingOperation -left-> ManualDriving : Operator\n Override
+AutonomousDrivingOperation -down-> MIAVErrorDiagnosis : Monitor system health
+AutonomousDrivingOperation -right-> EmergencyStop : Command emergency stop
+/' State change for manual driving of the vehicle '/
+ManualDriving -right-> AutonomousDrivingOperation : Set drive mode to autonomous
+/' Add state flows for emergency situation and diagnostic controls '/
+MIAVErrorDiagnosis -down-> EmergencyState : Detect system error
+EmergencyStop -down-> EmergencyState : Stop the vehicle
+EmergencyState --> [*] : Reboot System
+AutonomousDrivingOperation --> [*] : Terminate\n Operation
+@enduml
