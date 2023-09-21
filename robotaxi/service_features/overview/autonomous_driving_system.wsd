@@ -2,29 +2,35 @@
 scale 600 width
 hide empty description
 
-state "Autonomous Driving System" as AutonomousDrivingSystem
-state AutonomousDrivingSystem {
-    state "MIAV Startup" as MIAVStartup
-    state "MIAV Shutdown" as MIAVShutdown
-    state "MIAV Reboot" as MIAVReboot
-    state "MIAV Software Update" as MIAVSoftwareUpdate
-    state "Map Update" as MapUpdate
-    state "Log Collection" as LogCollection
-    state "Autonomous Mission" as AutonomousMission #YellowGreen
-
+skinparam state {
+  BackgroundColor #F3FDE8
+  BorderColor #5B9BD5
+  FontSize 12
+  FontColor #333333
 }
 
+/' Define system states'/
+state "Autonomous Driving System" as AutonomousDrivingSystem {
+    state "MIAV Startup" as MIAVStartup #D7E4EF
+    state "MIAV Shutdown" as MIAVShutdown #D7E4EF
+    state "MIAV Reboot" as MIAVReboot #E8EAF6
+    state "MIAV Software Update" as MIAVSoftwareUpdate #FCE4D6
+    state "Map Update" as MapUpdate #FCE4D6
+    state "Log Collection" as LogCollection #E8EAF6
+    state "Normal Operation" as NormalOperation #YellowGreen
+}
 
+/' Define system flow'/
 [*] -right-> MIAVStartup : Turn on the vehicle
-MIAVStartup -right-> AutonomousMission : Boot System
-MIAVStartup --> MapUpdate : Check Map is\nInvalid
-MIAVStartup --> MIAVSoftwareUpdate : Check Software is\nOut-of-date
+MIAVStartup -down-> NormalOperation : Boot System
+MIAVStartup --> MapUpdate : Check Map is\n Invalid
+MIAVStartup --> MIAVSoftwareUpdate : Check Software is\n Out-of-date
 MapUpdate --> MIAVReboot : Complete
 MIAVSoftwareUpdate --> MIAVReboot : Complete
-MIAVReboot -right-> AutonomousMission : Start Operation
-AutonomousMission -left-> MIAVReboot : Reboot System
-AutonomousMission --> MIAVShutdown : Finish the\nOperation
-MIAVShutdown -left-> LogCollection : Collect Data Storage System
+MIAVReboot -right-> NormalOperation : Start\n Operation
+NormalOperation -up-> MIAVReboot : Reboot System
+NormalOperation -right-> MIAVShutdown : Finish the Operation
+MIAVShutdown -down-> LogCollection : Collect Data Storage System
 LogCollection --> [*] : Update Logs
 
 @enduml
