@@ -1,0 +1,57 @@
+@startuml
+hide empty description
+skinparam backgroundColor #FFFFFF
+skinparam state {
+  BackgroundColor #F3FDE8
+  BorderColor #5B9BD5
+  FontSize 12
+  FontColor #333333
+}
+
+/' Define states in the Autonomous Driving Operation '/
+state "Autonomous Driving Operation" as AutonomousDrivingOperation {
+
+     state "Arriving Drop Off Point" as ArrivingDropOffPoint #E8EAF6
+     state "Operation Start" as OperationStart #E8EAF6
+     state "Travel Cancellation" as TravelCancellation #E8EAF6
+     state "At Destination" as AtDestination #E8EAF6
+     state "Departure Notice" as DepartureNotice #E8EAF6
+     state "Departure from Pick Up Point" as DepartureFromPickUpPoint #E8EAF6
+     state "Arrival Notice" as ArrivalNotice #E8EAF6
+
+    state "Autonomous Driving" as AutonomousDriving #D7E4EF {
+    state "Driving Pause" as DrivingPause #FCE4D6
+    state "Temporary Manual Driving" as TemporaryManualDriving #FCE4D6
+
+    state c <<choice>> 
+    [*] --> c
+    c --> DrivingPause : Approach pause\n position
+    DrivingPause --> c : Continue driving
+    c --> TemporaryManualDriving : Override
+    TemporaryManualDriving --> c : Switch drive mode\n to autonomous
+}
+}
+
+
+
+/' Transitions and flow of operations '/
+/' Start with OperationStart by enabling autonomous mode '/
+[*] -down-> OperationStart : Set drive mode to autonomous
+/' Drive to passenger pickup point via set route by FMS '/
+OperationStart -down-> AtDestination : Start execution of desired route
+/' Before departure, passengers should be notified for upcoming action '/
+AtDestination -right-> DepartureNotice : Inform passengers\n for departure
+DepartureNotice -left-> AtDestination : Finish passenger\n notice
+/' Depart '/
+AtDestination -down-> DepartureFromPickUpPoint : Depart
+DepartureFromPickUpPoint -down-> AutonomousDriving : Start autonomous driving
+/' Before arrival, passengers should be notified for upcoming action '/
+AutonomousDriving -up-> ArrivalNotice : Inform passengers\n for arrival
+ArrivalNotice -down-> AutonomousDriving : Finish passenger\n notice
+/' Arrival '/
+AutonomousDriving -up-> ArrivingDropOffPoint : Arrive at destination
+ArrivingDropOffPoint -up-> AtDestination : Arrive at destination
+/' If the goal position is wrong or autonomous driving should be cancelled '/
+AtDestination -left-> TravelCancellation : Cancel schedule
+TravelCancellation -left-> [*] : Terminate Operation
+@enduml
