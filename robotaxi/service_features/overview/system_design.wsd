@@ -1,0 +1,24 @@
+@startuml
+skinparam rectangle {
+    BorderColor #3C8DBC
+    FontColor #333
+    BorderThickness 2
+    BackgroundColor #E8E8E8
+    Shadowing false
+}
+
+rectangle System {
+    rectangle MIAV #FAFAD2 {
+        rectangle "Web.Auto Agent" #D7E4EF
+        rectangle Autoware #D7E4EF
+        rectangle "Computing Platform" #D7E4EF
+        rectangle "DriveXperience Control Center" #D7E4EF
+        rectangle Vehicle #D7E4EF
+    }    
+    rectangle "Web.Auto" #D8EAD9 {
+        rectangle "Vehicle Data Search" #C5E1A5
+        rectangle FMS #C5E1A5
+    }
+}
+
+@enduml
