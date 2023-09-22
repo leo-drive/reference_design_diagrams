@@ -2,8 +2,8 @@
 hide empty description
 skinparam backgroundColor #FFFFFF
 skinparam state {
-  BackgroundColor #F3FDE8
-  BorderColor #5B9BD5
+  BackgroundColor #DDF0E1
+  BorderColor #009688
   FontSize 12
   FontColor #333333
 }
@@ -11,48 +11,46 @@ skinparam state {
 /' Define states in the Autonomous Driving Operation '/
 state "Autonomous Driving Operation" as AutonomousDrivingOperation {
 
-     state "Arriving Drop Off Point" as ArrivingDropOffPoint #E8EAF6
-     state "Operation Start" as OperationStart #E8EAF6
-     state "Travel Cancellation" as TravelCancellation #E8EAF6
-     state "At Destination" as AtDestination #E8EAF6
-     state "Departure Notice" as DepartureNotice #E8EAF6
-     state "Departure from Pick Up Point" as DepartureFromPickUpPoint #E8EAF6
-     state "Arrival Notice" as ArrivalNotice #E8EAF6
+     state "Arriving Drop Off Point" as ArrivingDropOffPoint #C8E6C9
+     state "Operation Start" as OperationStart #C8E6C9
+     state "Travel Cancellation" as TravelCancellation #FFCDD2
+     state "Picking Up Passengers" as PickingUpPassengers #C8E6C9
+     state "Dropping Off Passengers" as DroppingOffPassengers #C8E6C9
+     state "Departure Notice" as DepartureNotice #C8E6C9
+     state "Departure from Pick Up Point" as DepartureFromPickUpPoint #C8E6C9
+     state "Arrival Notice" as ArrivalNotice #C8E6C9
 
-    state "Autonomous Driving" as AutonomousDriving #D7E4EF {
-    state "Driving Pause" as DrivingPause #FCE4D6
-    state "Temporary Manual Driving" as TemporaryManualDriving #FCE4D6
+    state "Autonomous Driving" as AutonomousDriving #B2DFDB {
+        state "Driving Pause" as DrivingPause #FFCDD2
+        state "Temporary Manual Driving" as TemporaryManualDriving #FFCDD2
 
-    state c <<choice>> 
-    [*] --> c
-    c --> DrivingPause : Approach pause\n position
-    DrivingPause --> c : Continue driving
-    c --> TemporaryManualDriving : Override
-    TemporaryManualDriving --> c : Switch drive mode\n to autonomous
-    c --> [*]
+        state c <<choice>> 
+        [*] --> c
+        c --> DrivingPause : Approach pause\n position
+        DrivingPause --> c : Continue driving
+        c --> TemporaryManualDriving : Override
+        TemporaryManualDriving --> c : Switch drive mode\n to autonomous
+        c --> [*]
+    }
 }
-}
-
-
 
 /' Transitions and flow of operations '/
-/' Start with OperationStart by enabling autonomous mode '/
 [*] -down-> OperationStart : Set drive mode to autonomous
-/' Drive to passenger pickup point via set route by FMS '/
-OperationStart -down-> AtDestination : Start execution of desired route
-/' Before departure, passengers should be notified for upcoming action '/
-AtDestination -right-> DepartureNotice : Inform passengers\n for departure
-DepartureNotice -left-> AtDestination : Finish passenger\n notice
-/' Depart '/
-AtDestination -down-> DepartureFromPickUpPoint : Depart
+OperationStart -down-> PickingUpPassengers : Start execution of desired route
+PickingUpPassengers -right-> DepartureNotice : Inform passengers for departure
+DepartureNotice -left-> PickingUpPassengers : Finish passenger notice
+PickingUpPassengers -down-> DepartureFromPickUpPoint : Depart
 DepartureFromPickUpPoint -down-> AutonomousDriving : Start autonomous driving
-/' Before arrival, passengers should be notified for upcoming action '/
 AutonomousDriving -up-> ArrivalNotice : Inform passengers\n for arrival
 ArrivalNotice -down-> AutonomousDriving : Finish passenger\n notice
-/' Arrival '/
 AutonomousDriving -up-> ArrivingDropOffPoint : Arrive at destination
-ArrivingDropOffPoint -up-> AtDestination : Arrive at destination
-/' If the goal position is wrong or autonomous driving should be cancelled '/
-AtDestination -left-> TravelCancellation : Cancel schedule
+ArrivingDropOffPoint -up-> DroppingOffPassengers : Arrive at destination
+DroppingOffPassengers -left-> [*] : Set pick up location
+DroppingOffPassengers -right-> TravelCancellation : Cancel Schedule
+PickingUpPassengers -left-> TravelCancellation : Cancel schedule
 TravelCancellation -left-> [*] : Terminate Operation
+AutonomousDriving --> [*] : Monitor system health
+AutonomousDriving --> [*] : Operator override
+AutonomousDriving --> [*] : Emergency Stop
+
 @enduml
